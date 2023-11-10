@@ -2,23 +2,23 @@ const products = [
   {
     name: "Cherry",
     price: 100,
-    quantity: 1,
+    quantity: 0,
     productId: 1,
-    image: "https://github.com/udacity/cd2073-intro-to-js-1-project-starter/blob/main/starter/src/images/cherry.jpg"
+    image: "images/cherry.jpg"
   },
   {
     name: "Orange",
     price: 50,
-    quantity: 1,
+    quantity: 0,
     productId: 2,
-    image: "https://github.com/udacity/cd2073-intro-to-js-1-project-starter/blob/main/starter/src/images/orange.jpg"
+    image: "images/orange.jpg"
   },
   {
     name: "Strawberry",
     price: 200,
-    quantity: 1,
+    quantity: 0,
     productId: 3,
-    image: "https://github.com/udacity/cd2073-intro-to-js-1-project-starter/blob/main/starter/src/images/strawberry.jpg"
+    image: "images/strawberry.jpg"
   }
 ];
 
@@ -39,40 +39,40 @@ function addProductToCart(productId) {
   const cartItemIndex = findProductIndexInCart(productId);
 
   if (cartItemIndex !== -1) {
-    // Product is already in the cart, increment the quantity
     cart[cartItemIndex].quantity += 1;
   } else {
-    // Product is not in the cart, add a new item
     cart.push({ ...product, quantity: 1 });
   }
+  product.quantity +=1;
 }
-
 
 
 function increaseQuantity(productId) {
-  const cartItem = cart.find(item => item.productId === productId);
+  const product = products.find(item => item.productId === productId);
 
-  if (!cartItem) {
+  if (!product) {
     console.error("Product not found in the cart");
     return;
   }
-  cartItem.quantity += 1;
-
+  product.quantity += 1;
 }
 
-function decreaseQuantity(productId) {
-  const productIndex = cart.findIndex(item => item.productId === productId);
 
-  if (productIndex === -1) {
+function decreaseQuantity(productId) {
+  const product = products.find(p => p.productId === productId);
+
+  if (!product) {
     console.error("Product not found in the cart");
     return;
   }
-  cart[productIndex].quantity -= 1;
+  product.quantity -= 1;
 
-  if (cart[productIndex].quantity === 0) {
+  const productIndex = cart.findIndex(item => item.productId === productId);
+  if (!product.quantity) {
     cart.splice(productIndex, 1);
   }
 }
+
 
 function removeProductFromCart(productId) {
   const productIndex = cart.findIndex(item => item.productId === productId);
@@ -83,7 +83,10 @@ function removeProductFromCart(productId) {
   }
   cart.splice(productIndex, 1);
 
+  const product = products.find(p => p.productId === productId);
+  product.quantity = 0;
 }
+
 
 function cartTotal() {
   const grandTotal = cart.reduce((total, item) => total + item.quantity * item.price, 0);
@@ -91,26 +94,42 @@ function cartTotal() {
   return grandTotal;
 }
 
+
 function emptyCart() {
   cart = [];
   return "Cart is now empty";
 }
+
 
 function pay(amountPaid) {
   const grandTotal = cartTotal();
   const remainingBalance = grandTotal - amountPaid;
 
   if (remainingBalance > 0) {
-    // Customer paid less than the total, return the remaining balance (negative)
     return remainingBalance;
   } else if (remainingBalance < 0) {
-    // Customer paid more than the total, return the amount to be returned (positive)
     return -remainingBalance;
   } else {
-    // Customer paid exactly the total, return 0
     return 0;
   }
 }
+
+
+const exchangeRates = {
+  USD: 1,      
+  EUR: 0.85,   
+  YEN: 113.28 
+};
+
+function currency(amount, fromCurrency, toCurrency) {
+  if (exchangeRates[fromCurrency] && exchangeRates[toCurrency]) {
+      const result = (amount / exchangeRates[fromCurrency]) * exchangeRates[toCurrency];
+      return result.toFixed(2); 
+  } else {
+      return "Exchange rates for selected currencies were not found.";
+  }
+}
+
 
 module.exports = {
   products,
@@ -123,6 +142,5 @@ module.exports = {
   cartTotal,
   pay, 
   emptyCart,
-  /* Uncomment the following line if completing the currency converter bonus */
-  // currency
+  currency
 }
